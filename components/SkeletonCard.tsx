@@ -1,0 +1,35 @@
+export function SkeletonCard() {
+  return (
+    <div className="bg-white rounded-xl shadow-md overflow-hidden border border-secondary-100 animate-pulse">
+      <div className="h-48 bg-secondary-200" />
+
+      <div className="p-4">
+        <div className="flex items-center gap-1 mb-2">
+          <div className="w-3 h-3 bg-secondary-200 rounded" />
+          <div className="h-3 bg-secondary-200 rounded w-2/3" />
+        </div>
+
+        <div className="h-5 bg-secondary-200 rounded w-4/5 mb-2" />
+
+        <div className="h-3 bg-secondary-200 rounded w-full mb-1" />
+        <div className="h-3 bg-secondary-200 rounded w-3/4 mb-4" />
+
+        <div className="border-t border-secondary-100 pt-3">
+          <div className="flex items-center justify-between">
+            <div className="h-6 bg-secondary-200 rounded w-1/3" />
+            <div className="flex gap-2">
+              <div className="h-4 bg-secondary-200 rounded w-8" />
+              <div className="h-4 bg-secondary-200 rounded w-8" />
+              <div className="h-4 bg-secondary-200 rounded w-8" />
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between mt-3">
+            <div className="h-3 bg-secondary-200 rounded w-1/4" />
+            <div className="h-8 bg-secondary-200 rounded w-24" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
