@@ -53,7 +53,7 @@ const nextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: "https://ghorbazar-server.onrender.com/api/:path*",
+        destination: "https://ghorbazar-server.vercel.app/api/:path*",
       },
     ];
   },
