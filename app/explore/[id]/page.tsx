@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useParams } from "next/navigation";
 import api from "@/lib/api";
 import { PropertyCard } from "@/components/PropertyCard";
-import { SkeletonCard } from "@/components/SkeletonCard";
 import {
   MapPin,
   Bed,
@@ -26,7 +26,6 @@ import {
   TreePine,
   Dumbbell,
   CheckCircle,
-  Loader2,
   AlertCircle,
   ChevronLeft,
   ChevronRight,
@@ -259,10 +258,12 @@ export default function PropertyDetailsPage() {
               <div className="relative h-[400px] md:h-[500px] bg-secondary-100">
                 {images.length > 0 ? (
                   <>
-                    <img
+                    <Image
                       src={images[selectedImageIndex]}
                       alt={property.title}
-                      className="w-full h-full object-cover"
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 66vw"
+                      className="object-cover"
                     />
                     {images.length > 1 && (
                       <>
@@ -355,9 +356,11 @@ export default function PropertyDetailsPage() {
                           : "border-transparent hover:border-secondary-300"
                       }`}
                     >
-                      <img
+                      <Image
                         src={image}
                         alt={`${property.title} - Image ${index + 1}`}
+                        width={80}
+                        height={80}
                         className="w-full h-full object-cover"
                       />
                     </button>

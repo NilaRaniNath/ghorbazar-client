@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Mail, ArrowRight, CheckCircle, Loader2, Bell } from "lucide-react";
 
 export function CTA() {
@@ -109,19 +110,19 @@ export function CTA() {
             you and your family. Thousands of verified properties are waiting.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a
+            <Link
               href="/explore"
               className="px-8 py-4 bg-primary-600 text-white rounded-xl font-medium hover:bg-primary-700 transition-colors inline-flex items-center justify-center gap-2"
             >
               Explore Properties
               <ArrowRight size={18} />
-            </a>
-            <a
+            </Link>
+            <Link
               href="/items/add"
               className="px-8 py-4 border-2 border-secondary-300 text-secondary-700 rounded-xl font-medium hover:bg-secondary-50 transition-colors inline-flex items-center justify-center gap-2"
             >
               List Your Property
-            </a>
+            </Link>
           </div>
         </div>
       </div>

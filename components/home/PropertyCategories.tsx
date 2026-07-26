@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Building, Home, Store, TreePine, ArrowRight } from "lucide-react";
 
 const categories = [
@@ -66,10 +67,12 @@ export function PropertyCategories() {
               href={category.href}
               className="group relative h-72 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300"
             >
-              <img
+              <Image
                 src={category.image}
                 alt={category.title}
-                className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                className="object-cover group-hover:scale-110 transition-transform duration-500"
               />
               <div className={`absolute inset-0 bg-gradient-to-t ${category.color} opacity-80 group-hover:opacity-90 transition-opacity`} />
 

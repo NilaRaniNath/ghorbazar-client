@@ -10,7 +10,6 @@ import {
   MapPin,
   DollarSign,
   FileText,
-  Image,
   Plus,
   Loader2,
   AlertCircle,
@@ -51,7 +50,7 @@ const areaUnits = [
 ];
 
 function AddPropertyContent() {
-  const { user } = useAuth();
+  useAuth();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");

@@ -102,8 +102,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user: user || null,
         isLoading,
         isAuthenticated: !!user,
-        login: loginMutation.mutateAsync,
-        register: registerMutation.mutateAsync,
+        login: async (email: string, password: string) => {
+          await loginMutation.mutateAsync({ email, password });
+        },
+        register: async (name: string, email: string, password: string) => {
+          await registerMutation.mutateAsync({ name, email, password });
+        },
         logout,
       }}
     >

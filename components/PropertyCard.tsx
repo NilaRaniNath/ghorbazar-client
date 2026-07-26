@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { MapPin, Bed, Bath, Square, Eye, Heart } from "lucide-react";
 import { useState } from "react";
 
@@ -44,10 +45,12 @@ export function PropertyCard({ property }: PropertyCardProps) {
     <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col h-full border border-secondary-100">
       <div className="relative h-48 overflow-hidden bg-secondary-100">
         {property.images && property.images.length > 0 && !imageError ? (
-          <img
+          <Image
             src={property.images[0]}
             alt={property.title}
-            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            className="object-cover hover:scale-105 transition-transform duration-300"
             onError={() => setImageError(true)}
           />
         ) : (

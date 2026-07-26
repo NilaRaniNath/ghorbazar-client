@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import api from "@/lib/api";
 import {
@@ -216,8 +217,8 @@ function AnalyticsSection({ properties }: { properties: Property[] }) {
                   outerRadius={90}
                   paddingAngle={4}
                   dataKey="value"
-                  label={({ name, percent }) =>
-                    `${name} ${(percent * 100).toFixed(0)}%`
+                  label={({ name, percent }: { name?: string; percent?: number }) =>
+                    `${name ?? ""} ${((percent ?? 0) * 100).toFixed(0)}%`
                   }
                 >
                   {categoryData.map((_, i) => (
@@ -300,7 +301,7 @@ function AnalyticsSection({ properties }: { properties: Property[] }) {
                 <XAxis dataKey="name" tick={{ fontSize: 10 }} stroke="#94a3b8" angle={-20} textAnchor="end" height={50} />
                 <YAxis tick={{ fontSize: 12 }} stroke="#94a3b8" />
                 <Tooltip
-                  formatter={(val: number) => `৳${(val * 100000).toLocaleString()}`}
+                  formatter={(val) => `৳${(Number(val ?? 0) * 100000).toLocaleString()}`}
                   contentStyle={{
                     borderRadius: "12px",
                     border: "1px solid #e2e8f0",
@@ -460,12 +461,14 @@ function ManagePropertiesContent() {
                   >
                     <div className="p-6">
                       <div className="flex flex-col sm:flex-row gap-4">
-                        <div className="w-full sm:w-40 h-32 bg-secondary-100 rounded-lg overflow-hidden flex-shrink-0">
+                        <div className="relative w-full sm:w-40 h-32 bg-secondary-100 rounded-lg overflow-hidden flex-shrink-0">
                           {property.images && property.images.length > 0 ? (
-                            <img
+                            <Image
                               src={property.images[0]}
                               alt={property.title}
-                              className="w-full h-full object-cover"
+                              fill
+                              sizes="160px"
+                              className="object-cover"
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center">

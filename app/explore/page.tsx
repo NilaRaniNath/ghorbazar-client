@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import api from "@/lib/api";
 import { PropertyCard } from "@/components/PropertyCard";
@@ -64,6 +64,18 @@ const purposeOptions = [
 ];
 
 export default function ExplorePage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-secondary-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+      </div>
+    }>
+      <ExplorePageContent />
+    </Suspense>
+  );
+}
+
+function ExplorePageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -72,16 +84,30 @@ export default function ExplorePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   const [filters, setFilters] = useState({
-    q: searchParams.get("q") || "",
-    type: searchParams.get("type") || "all",
-    purpose: searchParams.get("purpose") || "all",
-    minPrice: searchParams.get("minPrice") || "",
-    maxPrice: searchParams.get("maxPrice") || "",
-    sort: searchParams.get("sort") || "newest",
-    page: Number(searchParams.get("page")) || 1,
+    q: "",
+    type: "all",
+    purpose: "all",
+    minPrice: "",
+    maxPrice: "",
+    sort: "newest",
+    page: 1,
   });
+
+  useEffect(() => {
+    setFilters({
+      q: searchParams.get("q") || "",
+      type: searchParams.get("type") || "all",
+      purpose: searchParams.get("purpose") || "all",
+      minPrice: searchParams.get("minPrice") || "",
+      maxPrice: searchParams.get("maxPrice") || "",
+      sort: searchParams.get("sort") || "newest",
+      page: Number(searchParams.get("page")) || 1,
+    });
+    setIsMounted(true);
+  }, [searchParams]);
 
   const fetchProperties = useCallback(async () => {
     setIsLoading(true);
@@ -119,6 +145,8 @@ export default function ExplorePage() {
   }, [fetchProperties]);
 
   useEffect(() => {
+    if (!isMounted) return;
+
     const params = new URLSearchParams();
     if (filters.q) params.set("q", filters.q);
     if (filters.type !== "all") params.set("type", filters.type);
@@ -130,7 +158,7 @@ export default function ExplorePage() {
 
     const queryString = params.toString();
     router.push(`/explore${queryString ? `?${queryString}` : ""}`, { scroll: false });
-  }, [filters, router]);
+  }, [filters, router, isMounted]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import {
@@ -81,10 +82,12 @@ export function Navbar() {
                 <div className="flex items-center gap-2 px-3 py-1.5 bg-primary-50 rounded-full">
                   <div className="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center">
                     {user.avatar ? (
-                      <img
+                      <Image
                         src={user.avatar}
                         alt={user.name}
-                        className="w-8 h-8 rounded-full object-cover"
+                        width={32}
+                        height={32}
+                        className="rounded-full object-cover"
                       />
                     ) : (
                       <span className="text-white font-medium text-sm">
@@ -158,10 +161,12 @@ export function Navbar() {
                   <div className="flex items-center gap-3 px-4 py-3 mb-2">
                     <div className="w-10 h-10 bg-primary-600 rounded-full flex items-center justify-center">
                       {user.avatar ? (
-                        <img
+                        <Image
                           src={user.avatar}
                           alt={user.name}
-                          className="w-10 h-10 rounded-full object-cover"
+                          width={40}
+                          height={40}
+                          className="rounded-full object-cover"
                         />
                       ) : (
                         <span className="text-white font-medium">
