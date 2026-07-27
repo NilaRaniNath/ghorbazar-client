@@ -28,10 +28,10 @@ export function CTA() {
   return (
     <section className="py-16 md:py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="relative bg-gradient-to-br from-secondary-900 via-secondary-800 to-primary-900 rounded-3xl overflow-hidden">
+        <div className="relative bg-gradient-to-br from-[#1E1B4B] via-[#2E1065] to-[#0F172A] rounded-3xl overflow-hidden">
           <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-primary-400 rounded-full translate-x-1/2 -translate-y-1/2" />
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary-400 rounded-full -translate-x-1/2 translate-y-1/2" />
+            <div className="absolute top-0 right-0 w-96 h-96 bg-accent-400 rounded-full translate-x-1/2 -translate-y-1/2" />
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-accent-400 rounded-full -translate-x-1/2 translate-y-1/2" />
           </div>
 
           <div className="relative px-6 py-12 md:p-16">

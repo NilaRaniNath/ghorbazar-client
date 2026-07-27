@@ -4,43 +4,31 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "images.unsplash.com",
-      },
-      {
-        protocol: "https",
-        hostname: "plus.unsplash.com",
-      },
-      {
-        protocol: "https",
-        hostname: "via.placeholder.com",
-      },
-      {
-        protocol: "https",
-        hostname: "i.imgur.com",
-      },
-      {
-        protocol: "https",
-        hostname: "res.cloudinary.com",
-      },
-      {
-        protocol: "https",
-        hostname: "*.cloudinary.com",
-      },
-      {
-        protocol: "https",
         hostname: "i.ibb.co",
       },
       {
         protocol: "https",
-        hostname: "imgbb.com",
+        hostname: "ibb.co",
       },
       {
         protocol: "https",
-        hostname: "*.imgbb.com",
+        hostname: "images.unsplash.com",
       },
       {
         protocol: "https",
-        hostname: "**",
+        hostname: "lh3.googleusercontent.com",
+      },
+      {
+        protocol: "https",
+        hostname: "ui-avatars.com",
+      },
+      {
+        protocol: "https",
+        hostname: "images.pexels.com",
+      },
+      {
+        protocol: "https",
+        hostname: "www.pexels.com",
       },
     ],
   },
@@ -54,21 +42,6 @@ const nextConfig = {
       {
         source: "/api/:path*",
         destination: "https://ghorbazar-server.vercel.app/api/:path*",
-      },
-    ];
-  },
-  async headers() {
-    return [
-      {
-        source: "/(.*)",
-        headers: [
-          { key: "X-Frame-Options", value: "DENY" },
-          { key: "X-Content-Type-Options", value: "nosniff" },
-          {
-            key: "Referrer-Policy",
-            value: "strict-origin-when-cross-origin",
-          },
-        ],
       },
     ];
   },

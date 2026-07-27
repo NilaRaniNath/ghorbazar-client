@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
-import api from "@/lib/api";
+import api, { uploadImage } from "@/lib/api";
 import {
   Home,
   Plus,
@@ -13,7 +13,10 @@ import {
   MapPin,
   Loader2,
   AlertCircle,
+  X as XIcon,
+  Pencil,
   Package,
+  Upload,
   Calendar,
   Bed,
   Bath,
@@ -327,6 +330,11 @@ function ManagePropertiesContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [editingProperty, setEditingProperty] = useState<Property | null>(null);
+  const [editFormData, setEditFormData] = useState<Record<string, any>>({});
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [editImageFile, setEditImageFile] = useState<File | null>(null);
+  const [editImagePreview, setEditImagePreview] = useState("");
 
   const fetchProperties = async () => {
     try {
@@ -390,7 +398,7 @@ function ManagePropertiesContent() {
   };
 
   return (
-    <div className="min-h-screen bg-secondary-50 py-8">
+    <div className="min-h-screen bg-secondary-50 pt-20 pb-8">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
           <div>
@@ -548,6 +556,30 @@ function ManagePropertiesContent() {
                               View Details
                             </Link>
                             <button
+                              onClick={() => {
+                                setEditingProperty(property);
+                                setEditImageFile(null);
+                                setEditImagePreview("");
+                                setEditFormData({
+                                  title: property.title,
+                                  shortDescription: property.shortDescription || "",
+                                  description: property.description,
+                                  price: property.price,
+                                  location: property.location,
+                                  division: property.division,
+                                  propertyType: property.propertyType,
+                                  purpose: property.purpose,
+                                  bedrooms: property.bedrooms,
+                                  bathrooms: property.bathrooms,
+                                  areaSize: property.areaSize,
+                                });
+                              }}
+                              className="inline-flex items-center gap-2 px-4 py-2 text-primary-600 hover:bg-primary-50 rounded-lg font-medium text-sm transition-colors"
+                            >
+                              <Pencil size={16} />
+                              Edit
+                            </button>
+                            <button
                               onClick={() => handleDelete(property._id)}
                               disabled={deletingId === property._id}
                               className="inline-flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg font-medium text-sm transition-colors disabled:opacity-50"
@@ -570,6 +602,267 @@ function ManagePropertiesContent() {
           </>
         )}
       </div>
+
+      {editingProperty && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-secondary-100">
+              <div>
+                <h2 className="text-xl font-bold text-secondary-900">Edit Property</h2>
+                <p className="text-secondary-500 text-sm mt-1">Update your property listing</p>
+              </div>
+              <button
+                onClick={() => setEditingProperty(null)}
+                className="p-2 hover:bg-secondary-100 rounded-lg transition-colors"
+              >
+                <XIcon size={20} className="text-secondary-500" />
+              </button>
+            </div>
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                setIsUpdating(true);
+                try {
+                  let updatedImages = editingProperty.images;
+
+                  if (editImageFile) {
+                    const uploadedUrl = await uploadImage(editImageFile);
+                    updatedImages = [uploadedUrl];
+                  }
+
+                  const response = await api.put(
+                    `/properties/${editingProperty._id}`,
+                    {
+                      title: editFormData.title,
+                      shortDescription: editFormData.shortDescription,
+                      description: editFormData.description,
+                      price: Number(editFormData.price),
+                      location: editFormData.location,
+                      division: editFormData.division,
+                      propertyType: editFormData.propertyType,
+                      purpose: editFormData.purpose,
+                      bedrooms: Number(editFormData.bedrooms),
+                      bathrooms: Number(editFormData.bathrooms),
+                      areaSize: Number(editFormData.areaSize),
+                      images: updatedImages,
+                    }
+                  );
+                  if (response.data.success) {
+                    setProperties((prev) =>
+                      prev.map((p) =>
+                        p._id === editingProperty._id
+                          ? { ...p, ...response.data.data.property }
+                          : p
+                      )
+                    );
+                    setEditingProperty(null);
+                  }
+                } catch (err: any) {
+                  setError(err.response?.data?.message || "Failed to update property");
+                } finally {
+                  setIsUpdating(false);
+                }
+              }}
+              className="p-6 space-y-5"
+            >
+              <div>
+                <label className="block text-sm font-medium text-secondary-700 mb-1.5">
+                  Property Title
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editFormData.title || ""}
+                  onChange={(e) => setEditFormData((prev) => ({ ...prev, title: e.target.value }))}
+                  className="w-full px-4 py-2.5 border border-secondary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-secondary-700 mb-1.5">
+                  Short Description
+                </label>
+                <input
+                  type="text"
+                  value={editFormData.shortDescription || ""}
+                  onChange={(e) => setEditFormData((prev) => ({ ...prev, shortDescription: e.target.value }))}
+                  className="w-full px-4 py-2.5 border border-secondary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-secondary-700 mb-1.5">
+                  Description
+                </label>
+                <textarea
+                  required
+                  rows={3}
+                  value={editFormData.description || ""}
+                  onChange={(e) => setEditFormData((prev) => ({ ...prev, description: e.target.value }))}
+                  className="w-full px-4 py-2.5 border border-secondary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm resize-none"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-secondary-700 mb-1.5">
+                    Price (BDT)
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    min="1"
+                    value={editFormData.price || ""}
+                    onChange={(e) => setEditFormData((prev) => ({ ...prev, price: e.target.value }))}
+                    className="w-full px-4 py-2.5 border border-secondary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-secondary-700 mb-1.5">
+                    Location
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={editFormData.location || ""}
+                    onChange={(e) => setEditFormData((prev) => ({ ...prev, location: e.target.value }))}
+                    className="w-full px-4 py-2.5 border border-secondary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-secondary-700 mb-1.5">
+                    Property Type
+                  </label>
+                  <select
+                    value={editFormData.propertyType || ""}
+                    onChange={(e) => setEditFormData((prev) => ({ ...prev, propertyType: e.target.value }))}
+                    className="w-full px-4 py-2.5 border border-secondary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm bg-white"
+                  >
+                    <option value="apartment">Apartment</option>
+                    <option value="house">House</option>
+                    <option value="commercial">Commercial</option>
+                    <option value="land">Land</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-secondary-700 mb-1.5">
+                    Purpose
+                  </label>
+                  <select
+                    value={editFormData.purpose || ""}
+                    onChange={(e) => setEditFormData((prev) => ({ ...prev, purpose: e.target.value }))}
+                    className="w-full px-4 py-2.5 border border-secondary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm bg-white"
+                  >
+                    <option value="buy">For Sale</option>
+                    <option value="rent">For Rent</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-secondary-700 mb-1.5">
+                    Bedrooms
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={editFormData.bedrooms || ""}
+                    onChange={(e) => setEditFormData((prev) => ({ ...prev, bedrooms: e.target.value }))}
+                    className="w-full px-4 py-2.5 border border-secondary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-secondary-700 mb-1.5">
+                    Bathrooms
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={editFormData.bathrooms || ""}
+                    onChange={(e) => setEditFormData((prev) => ({ ...prev, bathrooms: e.target.value }))}
+                    className="w-full px-4 py-2.5 border border-secondary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-secondary-700 mb-1.5">
+                    Area Size (sqft)
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={editFormData.areaSize || ""}
+                    onChange={(e) => setEditFormData((prev) => ({ ...prev, areaSize: e.target.value }))}
+                    className="w-full px-4 py-2.5 border border-secondary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
+                  />
+                </div>
+              </div>
+
+              {/* Image Upload */}
+              <div>
+                <label className="block text-sm font-medium text-secondary-700 mb-1.5">
+                  Property Image
+                </label>
+                {editImagePreview || (editFormData.images && editFormData.images[0]) ? (
+                  <div className="relative">
+                    <img
+                      src={editImagePreview || editFormData.images?.[0] || ""}
+                      alt="Preview"
+                      className="w-full h-40 object-cover rounded-lg border border-secondary-200"
+                    />
+                    {editImagePreview && (
+                      <button
+                        type="button"
+                        onClick={() => { setEditImageFile(null); setEditImagePreview(""); }}
+                        className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                      >
+                        <XIcon size={14} />
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-secondary-300 rounded-lg cursor-pointer hover:border-primary-400 hover:bg-primary-50/50 transition-colors">
+                    <Upload className="w-8 h-8 text-secondary-400 mb-1" />
+                    <span className="text-sm text-secondary-500">Click to upload</span>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        if (file.size > 5 * 1024 * 1024) { setError("Image must be less than 5MB"); return; }
+                        setEditImageFile(file);
+                        const reader = new FileReader();
+                        reader.onload = (ev) => setEditImagePreview(ev.target?.result as string);
+                        reader.readAsDataURL(file);
+                      }}
+                      className="hidden"
+                    />
+                  </label>
+                )}
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setEditingProperty(null)}
+                  className="flex-1 px-4 py-2.5 border border-secondary-200 text-secondary-700 rounded-lg font-medium text-sm hover:bg-secondary-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isUpdating}
+                  className="flex-1 px-4 py-2.5 bg-primary-600 text-white rounded-lg font-medium text-sm hover:bg-primary-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {isUpdating ? (
+                    <>
+                      <Loader2 className="animate-spin" size={16} />
+                      Updating...
+                    </>
+                  ) : (
+                    "Save Changes"
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

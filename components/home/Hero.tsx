@@ -38,10 +38,10 @@ export function Hero() {
   };
 
   return (
-    <section className="relative h-[65vh] min-h-[480px] max-h-[600px] bg-gradient-to-br from-secondary-900 via-secondary-800 to-primary-900 flex items-center">
+    <section className="relative min-h-[70vh] min-h-[520px] max-h-[700px] bg-gradient-to-br from-[#1E1B4B] via-[#2E1065] to-[#0F172A] flex items-center pt-16 pb-24">
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920')] bg-cover bg-center opacity-20" />
-        <div className="absolute inset-0 bg-gradient-to-r from-secondary-900/95 to-secondary-900/80" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#1E1B4B]/95 to-[#1E1B4B]/80" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">

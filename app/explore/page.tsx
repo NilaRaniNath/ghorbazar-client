@@ -199,7 +199,7 @@ function ExplorePageContent() {
     filters.maxPrice;
 
   return (
-    <div className="min-h-screen bg-secondary-50">
+    <div className="min-h-screen bg-secondary-50 pt-16">
       <div className="bg-white border-b border-secondary-100 sticky top-16 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <form onSubmit={handleSearch} className="flex gap-3">

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { MapPin, Bed, Bath, Square, Eye, Heart } from "lucide-react";
+import { MapPin, Bed, Bath, Square, Eye } from "lucide-react";
 import { useState } from "react";
 
 interface PropertyCardProps {
@@ -25,7 +25,6 @@ interface PropertyCardProps {
 }
 
 export function PropertyCard({ property }: PropertyCardProps) {
-  const [isFavorite, setIsFavorite] = useState(false);
   const [imageError, setImageError] = useState(false);
 
   const formatPrice = (price: number) => {
@@ -75,22 +74,6 @@ export function PropertyCard({ property }: PropertyCardProps) {
           {purposeLabel}
         </span>
 
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            setIsFavorite(!isFavorite);
-          }}
-          className="absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition-colors shadow-sm"
-        >
-          <Heart
-            size={18}
-            className={
-              isFavorite
-                ? "fill-red-500 text-red-500"
-                : "text-secondary-400 hover:text-red-400"
-            }
-          />
-        </button>
       </div>
 
       <div className="p-4 flex flex-col flex-1">

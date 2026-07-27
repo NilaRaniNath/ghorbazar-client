@@ -17,7 +17,6 @@ import {
   Phone,
   Mail,
   Share2,
-  Heart,
   ArrowLeft,
   Car,
   Wifi,
@@ -75,7 +74,6 @@ export default function PropertyDetailsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const [isFavorite, setIsFavorite] = useState(false);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -233,7 +231,7 @@ export default function PropertyDetailsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-secondary-50">
+    <div className="min-h-screen bg-secondary-50 pt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <nav className="flex items-center gap-2 text-sm text-secondary-500 mb-6">
           <Link href="/" className="hover:text-primary-600 transition-colors">
@@ -318,19 +316,6 @@ export default function PropertyDetailsPage() {
                 </span>
 
                 <div className="absolute top-4 right-4 flex gap-2">
-                  <button
-                    onClick={() => setIsFavorite(!isFavorite)}
-                    className="p-2.5 bg-white/90 rounded-full hover:bg-white transition-colors shadow-lg"
-                  >
-                    <Heart
-                      size={20}
-                      className={
-                        isFavorite
-                          ? "fill-red-500 text-red-500"
-                          : "text-secondary-600"
-                      }
-                    />
-                  </button>
                   <button
                     onClick={handleCopyLink}
                     className="p-2.5 bg-white/90 rounded-full hover:bg-white transition-colors shadow-lg"

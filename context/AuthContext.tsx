@@ -38,6 +38,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string, phone?: string) => Promise<void>;
   demoLogin: () => Promise<void>;
+  googleLogin: (credential: string) => Promise<void>;
   logout: () => void;
   updateUser: (user: User) => void;
 }
@@ -126,6 +127,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const googleLogin = async (credential: string) => {
+    const response = await api.post<AuthResponse>("/auth/google", { credential });
+
+    if (response.data.success) {
+      const { user: userData, token: authToken } = response.data.data;
+      localStorage.setItem("token", authToken);
+      setToken(authToken);
+      setUser(userData);
+      router.push("/");
+    }
+  };
+
   const logout = () => {
     localStorage.removeItem("token");
     setToken(null);
@@ -143,6 +156,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         login,
         register,
         demoLogin,
+        googleLogin,
         logout,
         updateUser,
       }}
@@ -155,7 +169,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    return {
+      user: null,
+      token: null,
+      isLoading: true,
+      isAuthenticated: false,
+      login: async () => {},
+      register: async () => {},
+      demoLogin: async () => {},
+      googleLogin: async () => {},
+      logout: () => {},
+      updateUser: () => {},
+    };
   }
   return context;
 }

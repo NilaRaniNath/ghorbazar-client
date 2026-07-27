@@ -74,7 +74,7 @@ const team = [
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white pt-16">
       {/* Hero */}
       <section className="relative bg-gradient-to-br from-primary-800 via-primary-700 to-teal-800 text-white overflow-hidden">
         <div className="absolute inset-0 opacity-10">

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { GoogleLogin } from "@react-oauth/google";
 import { Mail, Lock, User, Phone, Eye, EyeOff, UserPlus, AlertCircle, Loader2 } from "lucide-react";
 
 export default function RegisterPage() {
@@ -17,7 +18,8 @@ export default function RegisterPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { register } = useAuth();
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const { register, googleLogin } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
@@ -52,7 +54,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-secondary-50 via-white to-primary-50 flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-secondary-50 via-white to-primary-50 flex items-center justify-center px-4 py-12 pt-20">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 mb-6">
@@ -219,6 +221,46 @@ export default function RegisterPage() {
               )}
             </button>
           </form>
+
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-secondary-200"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-4 bg-white text-secondary-500">or continue with</span>
+            </div>
+          </div>
+
+          <div className="flex justify-center">
+            {isGoogleLoading ? (
+              <div className="w-full bg-white border-2 border-secondary-200 text-secondary-600 py-3 rounded-lg font-medium flex items-center justify-center gap-2">
+                <Loader2 className="animate-spin" size={20} />
+                Signing in with Google...
+              </div>
+            ) : (
+              <GoogleLogin
+                onSuccess={async (credentialResponse) => {
+                  if (credentialResponse.credential) {
+                    setIsGoogleLoading(true);
+                    setError("");
+                    try {
+                      await googleLogin(credentialResponse.credential);
+                    } catch (err: any) {
+                      setError(err.response?.data?.message || "Google login failed. Please try again.");
+                    } finally {
+                      setIsGoogleLoading(false);
+                    }
+                  }
+                }}
+                onError={() => {
+                  setError("Google login failed. Please try again.");
+                }}
+                theme="outline"
+                shape="rectangular"
+                text="continue_with"
+              />
+            )}
+          </div>
         </div>
 
         <p className="text-center mt-6 text-secondary-600">

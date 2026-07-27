@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useAuth } from "@/context/AuthContext";
-import api from "@/lib/api";
+import api, { uploadImage } from "@/lib/api";
 import {
   Home,
   MapPin,
@@ -18,6 +18,9 @@ import {
   Bed,
   Bath,
   Maximize,
+  Upload,
+  X as XIcon,
+  Image as ImageIcon,
 } from "lucide-react";
 
 const propertyTypes = [
@@ -71,11 +74,13 @@ function AddPropertyContent() {
     bathrooms: "1",
     areaSize: "",
     areaUnit: "sqft",
-    imageUrl: "",
     features: [] as string[],
   });
 
   const [featureInput, setFeatureInput] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -103,6 +108,26 @@ function AddPropertyContent() {
     }));
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Image must be less than 5MB");
+      return;
+    }
+
+    setImageFile(file);
+    const reader = new FileReader();
+    reader.onload = (ev) => setImagePreview(ev.target?.result as string);
+    reader.readAsDataURL(file);
+  };
+
+  const removeImage = () => {
+    setImageFile(null);
+    setImagePreview("");
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -121,6 +146,14 @@ function AddPropertyContent() {
     setIsSubmitting(true);
 
     try {
+      let imageUrl = "";
+
+      if (imageFile) {
+        setIsUploading(true);
+        imageUrl = await uploadImage(imageFile);
+        setIsUploading(false);
+      }
+
       const propertyData = {
         title: formData.title,
         shortDescription: formData.shortDescription,
@@ -136,7 +169,7 @@ function AddPropertyContent() {
         bathrooms: Number(formData.bathrooms) || 1,
         areaSize: Number(formData.areaSize) || 0,
         areaUnit: formData.areaUnit,
-        images: formData.imageUrl ? [formData.imageUrl] : [],
+        images: imageUrl ? [imageUrl] : [],
         features: formData.features,
       };
 
@@ -154,7 +187,7 @@ function AddPropertyContent() {
   };
 
   return (
-    <div className="min-h-screen bg-secondary-50 py-8">
+    <div className="min-h-screen bg-secondary-50 pt-20 pb-8">
       <div className="max-w-3xl mx-auto px-4 sm:px-6">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-secondary-900">Add New Property</h1>
@@ -297,16 +330,41 @@ function AddPropertyContent() {
 
               <div>
                 <label className="block text-sm font-medium text-secondary-700 mb-2">
-                  Image URL
+                  Property Image
                 </label>
-                <input
-                  type="url"
-                  name="imageUrl"
-                  value={formData.imageUrl}
-                  onChange={handleChange}
-                  placeholder="https://example.com/image.jpg"
-                  className="w-full px-4 py-3 border border-secondary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                />
+
+                {imagePreview ? (
+                  <div className="relative">
+                    <img
+                      src={imagePreview}
+                      alt="Preview"
+                      className="w-full h-48 object-cover rounded-lg border border-secondary-200"
+                    />
+                    <button
+                      type="button"
+                      onClick={removeImage}
+                      className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                    >
+                      <XIcon size={14} />
+                    </button>
+                  </div>
+                ) : (
+                  <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-secondary-300 rounded-lg cursor-pointer hover:border-primary-400 hover:bg-primary-50/50 transition-colors">
+                    <Upload className="w-10 h-10 text-secondary-400 mb-2" />
+                    <span className="text-sm text-secondary-500 font-medium">
+                      Click to upload an image
+                    </span>
+                    <span className="text-xs text-secondary-400 mt-1">
+                      JPG, PNG, WebP — Max 5MB
+                    </span>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      onChange={handleImageChange}
+                      className="hidden"
+                    />
+                  </label>
+                )}
               </div>
             </div>
           </div>
@@ -517,7 +575,7 @@ function AddPropertyContent() {
               {isSubmitting ? (
                 <>
                   <Loader2 className="animate-spin" size={20} />
-                  Creating...
+                  {isUploading ? "Uploading Image..." : "Creating..."}
                 </>
               ) : (
                 <>

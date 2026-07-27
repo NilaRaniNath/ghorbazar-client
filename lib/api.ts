@@ -37,6 +37,18 @@ api.interceptors.response.use(
 
 export default api;
 
+export async function uploadImage(file: File): Promise<string> {
+  const reader = new FileReader();
+  const base64 = await new Promise<string>((resolve, reject) => {
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+
+  const res = await api.post("/upload/image", { image: base64 });
+  return res.data.data.url;
+}
+
 export const apiEndpoints = {
   auth: {
     login: "/auth/login",
@@ -53,5 +65,8 @@ export const apiEndpoints = {
     update: (id: string) => `/properties/${id}`,
     delete: (id: string) => `/properties/${id}`,
     search: "/properties/search",
+  },
+  upload: {
+    image: "/upload/image",
   },
 };
