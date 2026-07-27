@@ -123,7 +123,7 @@ function ExplorePageContent() {
       if (filters.maxPrice) params.append("maxPrice", filters.maxPrice);
       if (filters.sort) params.append("sort", filters.sort);
       params.append("page", String(filters.page));
-      params.append("limit", "12");
+      params.append("limit", "8");
 
       const response = await api.get(`/properties?${params.toString()}`);
 
