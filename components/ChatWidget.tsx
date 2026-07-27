@@ -54,7 +54,7 @@ export default function ChatWidget() {
     const chatHistory = [...messages, userMessage].slice(-10);
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/ai/chat`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "/api"}/ai/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
